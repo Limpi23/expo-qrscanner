@@ -4,6 +4,8 @@ import {Text, View} from '../components/Themed';
 import {BarCodeScanner, BarCodeScannerResult} from 'expo-barcode-scanner';
 import BarcodeMask from 'react-native-barcode-mask';
 
+import { validateUrl } from '../config';
+
 const finderWidth: number = 280;
 const finderHeight: number = 230;
 const width = Dimensions.get('window').width;
@@ -16,6 +18,7 @@ export default function BarCodeScanScreen() {
     const [hasPermission, setHasPermission] = useState<boolean | null>(null);
     const [type, setType] = useState<any>(BarCodeScanner.Constants.Type.back);
     const [scanned, setScanned] = useState<boolean>(false);
+    const [isOffcial, setIsOffcial] = useState<boolean>(false);
 
 
     useEffect(() => {
@@ -30,9 +33,13 @@ export default function BarCodeScanScreen() {
             const {type, data, bounds: {origin} = {}} = scanningResult;
             // @ts-ignore
             const {x, y} = origin;
-            if (x >= viewMinX && y >= viewMinY && x <= (viewMinX + finderWidth / 2) && y <= (viewMinY + finderHeight / 2)) {
+            let dataUrl = data.split(".bo");
+        
+            if (x >= viewMinX && y >= viewMinY && x <= (viewMinX + finderWidth / 2) && y <= (viewMinY + finderHeight / 2) && dataUrl[0].toString() === validateUrl) {
                 setScanned(true);
-                alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+                setIsOffcial(true);
+                // alert(`Tipo de codigo de lector: ${type} y la informacion: ${data} y esto de aqui ${dataUrl[0]}`);
+                isOffcial ? alert(`Si es funcionario!!`) : alert(`No es funcionario o el link no es de la gobernacion.`);
             }
         }
     };
